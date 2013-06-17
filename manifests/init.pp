@@ -31,7 +31,10 @@ class hosts(
     'ip6-localhost':
       ensure        => present,
       ip            => '::1',
-      host_aliases  => 'ip6-loopback';
+      host_aliases  => [
+        'ip6-loopback',
+        'localhost',
+      ];
     'ip6-localnet':
       ensure        => present,
       ip            => 'fe00::0';

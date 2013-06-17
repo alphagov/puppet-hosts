@@ -48,7 +48,7 @@ describe 'hosts' do
     it {
       should contain_host('ip6-localhost').with(
         :ip           => '::1',
-        :host_aliases => 'ip6-loopback',
+        :host_aliases => ['ip6-loopback', 'localhost'],
       )
     }
   end
