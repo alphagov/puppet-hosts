@@ -1,15 +1,21 @@
-# == Class: hosts
+# = Class: hosts
 #
 # Manage standard /etc/hosts entries:
 #
 # - IPv4 loopback.
 # - IPv6 lookback and multicast.
 #
-# It will additionally purge any unmanaged entries.
+# == Parameters:
 #
-class hosts {
+# [*purge*]
+#   Purge unmanaged hosts entries. This is recommended.
+#   Default: true
+#
+class hosts(
+  $purge = true
+) {
   resources { 'host':
-    purge => true,
+    purge => $purge,
   }
 
   host { $::fqdn:

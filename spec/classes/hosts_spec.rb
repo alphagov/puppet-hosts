@@ -2,7 +2,25 @@ require 'spec_helper'
 
 describe 'hosts' do
   context 'purge' do
-    it { should contain_resources('host').with_purge(true) }
+    context 'when default, true' do
+      it { should contain_resources('host').with_purge(true) }
+    end
+
+    context 'when true' do
+      let(:params) {{
+        :purge => true,
+      }}
+
+      it { should contain_resources('host').with_purge(true) }
+    end
+
+    context 'when false' do
+      let(:params) {{
+        :purge => false,
+      }}
+
+      it { should contain_resources('host').with_purge(false) }
+    end
   end
 
   context 'fqdn' do
