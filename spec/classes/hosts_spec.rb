@@ -27,12 +27,11 @@ describe 'hosts' do
     let(:facts) {{
       :hostname  => 'foo',
       :fqdn      => 'foo.example.com',
-      :ipaddress => '1.1.1.1',
     }}
 
     it {
       should contain_host('foo.example.com').with(
-        :ip           => '1.1.1.1',
+        :ip           => '127.0.1.1',
         :host_aliases => 'foo',
       )
     }

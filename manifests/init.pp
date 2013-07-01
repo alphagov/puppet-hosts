@@ -20,7 +20,7 @@ class hosts(
 
   host { $::fqdn:
     ensure        => present,
-    ip            => $::ipaddress,
+    ip            => '127.0.1.1',
     host_aliases  => $::hostname,
   }
 
