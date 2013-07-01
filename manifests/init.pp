@@ -18,7 +18,9 @@ class hosts {
     content => template('hosts/etc/hosts.erb'),
   }
 
-  if !($::fqdn) or ("${::fqdn}" == '') {
+  # Workaround for Puppet 2.7
+  $fqdn_real = inline_template('<%= scope.lookupvar("::fqdn") -%>')
+  if !$fqdn_real {
     notify { 'fqdn warning':
       message => '$::fqdn is missing. You may need to fix this by hand.',
     }
