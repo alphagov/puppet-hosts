@@ -17,4 +17,10 @@ class hosts {
     mode    => '0644',
     content => template('hosts/etc/hosts.erb'),
   }
+
+  if !$::fqdn {
+    notify { 'fqdn warning':
+      message => '$::fqdn is missing. You may need to fix this by hand.',
+    }
+  }
 }

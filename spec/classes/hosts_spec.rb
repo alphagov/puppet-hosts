@@ -1,10 +1,11 @@
 require 'spec_helper'
 
 describe 'hosts' do
-  let(:hosts) { '/etc/hosts' }
+  let(:hosts_file) { '/etc/hosts' }
+  let(:fqdn_warning) { 'fqdn warning' }
 
   context 'file resource' do
-    it { should contain_file(hosts).with(
+    it { should contain_file(hosts_file).with(
       :ensure => 'present',
       :owner  => 'root',
       :group  => 'root',
@@ -20,9 +21,11 @@ describe 'hosts' do
         :fqdn       => 'foo.example.com',
       }}
 
-      it { should contain_file(hosts).with_content(
+      it { should contain_file(hosts_file).with_content(
         /^127\.0\.1\.1 foo.example.com foo$/
       )}
+
+      it { should_not contain_notify(fqdn_warning) }
     end
 
     context 'domain and FQDN missing' do
@@ -32,21 +35,23 @@ describe 'hosts' do
         :fqdn       => nil,
       }}
 
-      it { should contain_file(hosts).with_content(
+      it { should contain_file(hosts_file).with_content(
         /^127\.0\.1\.1  foo$/
       )}
+
+      it { should contain_notify(fqdn_warning) }
     end
   end
 
   context 'loopback' do
     it 'should contain entry for IPv4 loopback' do
-      should contain_file(hosts).with_content(
+      should contain_file(hosts_file).with_content(
         /^127\.0\.0\.1 localhost$/
       )
     end
 
     it 'should contain entry for IPv6 loopback with additional localhost alias' do
-      should contain_file(hosts).with_content(
+      should contain_file(hosts_file).with_content(
         /^::1 ip6-localhost ip6-loopback localhost$/
       )
     end
@@ -54,7 +59,7 @@ describe 'hosts' do
 
   context 'IPv6' do
     it 'should contain standard IPv6 entries' do
-      should contain_file(hosts).with_content(
+      should contain_file(hosts_file).with_content(
 /^fe00::0 ip6-localnet
 ff00::0 ip6-mcastprefix
 ff02::1 ip6-allnodes
