@@ -18,7 +18,7 @@ class hosts {
     content => template('hosts/etc/hosts.erb'),
   }
 
-  if !$::fqdn {
+  if !($::fqdn) or ("${::fqdn}" == '') {
     notify { 'fqdn warning':
       message => '$::fqdn is missing. You may need to fix this by hand.',
     }
