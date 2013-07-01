@@ -1,54 +1,71 @@
 require 'spec_helper'
 
 describe 'hosts' do
-  context 'purge' do
-    context 'when default, true' do
-      it { should contain_resources('host').with_purge(true) }
-    end
+  let(:hosts_file) { '/etc/hosts' }
+  let(:fqdn_warning) { 'fqdn warning' }
 
-    context 'when true' do
-      let(:params) {{
-        :purge => true,
-      }}
-
-      it { should contain_resources('host').with_purge(true) }
-    end
-
-    context 'when false' do
-      let(:params) {{
-        :purge => false,
-      }}
-
-      it { should contain_resources('host').with_purge(false) }
-    end
+  context 'file resource' do
+    it { should contain_file(hosts_file).with(
+      :ensure => 'present',
+      :owner  => 'root',
+      :group  => 'root',
+      :mode   => '0644',
+    )}
   end
 
-  context 'fqdn' do
-    let(:facts) {{
-      :hostname  => 'foo',
-      :fqdn      => 'foo.example.com',
-    }}
+  context 'self' do
+    context 'domain and FQDN set correctly' do
+      let(:facts) {{
+        :hostname   => 'foo',
+        :domainname => 'example.com',
+        :fqdn       => 'foo.example.com',
+      }}
 
-    it {
-      should contain_host('foo.example.com').with(
-        :ip           => '127.0.1.1',
-        :host_aliases => 'foo',
-      )
-    }
+      it { should contain_file(hosts_file).with_content(
+        /^127\.0\.1\.1 foo.example.com foo$/
+      )}
+
+      it { should_not contain_notify(fqdn_warning) }
+    end
+
+    context 'domain and FQDN missing' do
+      let(:facts) {{
+        :hostname   => 'foo',
+        :domainname => nil,
+        :fqdn       => nil,
+      }}
+
+      it { should contain_file(hosts_file).with_content(
+        /^127\.0\.1\.1  foo$/
+      )}
+
+      it { should contain_notify(fqdn_warning) }
+    end
   end
 
   context 'loopback' do
-    it { should contain_host('localhost').with_ip('127.0.0.1') }
-    it { should contain_host('ip6-localnet').with_ip('fe00::0') }
-    it { should contain_host('ip6-mcastprefix').with_ip('ff00::0') }
-    it { should contain_host('ip6-allnodes').with_ip('ff02::1') }
-    it { should contain_host('ip6-allrouters').with_ip('ff02::2') }
-
-    it {
-      should contain_host('ip6-localhost').with(
-        :ip           => '::1',
-        :host_aliases => ['ip6-loopback', 'localhost'],
+    it 'should contain entry for IPv4 loopback' do
+      should contain_file(hosts_file).with_content(
+        /^127\.0\.0\.1 localhost$/
       )
-    }
+    end
+
+    it 'should contain entry for IPv6 loopback with additional localhost alias' do
+      should contain_file(hosts_file).with_content(
+        /^::1 ip6-localhost ip6-loopback localhost$/
+      )
+    end
+  end
+
+  context 'IPv6' do
+    it 'should contain standard IPv6 entries' do
+      should contain_file(hosts_file).with_content(
+/^fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+ff02::3 ip6-allhosts\Z/
+      )
+    end
   end
 end
