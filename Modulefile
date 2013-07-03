@@ -1,7 +1,7 @@
 name          'gdsoperations-hosts'
 version       '1.0.0'
 source        'https://github.com/gds-operations/puppet-hosts'
-author        'puppet'
+author        'Government Digital Service'
 license       'MIT'
 summary       'Manage standard hosts(5)'
 project_page  'https://github.com/gds-operations/puppet-hosts'
