@@ -1,5 +1,5 @@
 name          'gdsoperations-hosts'
-version       '1.0.0'
+version       '1.0.1'
 source        'https://github.com/gds-operations/puppet-hosts'
 author        'Government Digital Service'
 license       'MIT'
